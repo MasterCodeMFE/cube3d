@@ -6,7 +6,7 @@
 #    By: manufern <manufern@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/11/24 10:30:44 by igcastil          #+#    #+#              #
-#    Updated: 2024/11/12 12:56:31 by manufern         ###   ########.fr        #
+#    Updated: 2025/04/03 15:10:04 by manufern         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,7 +36,9 @@ SRC =	main.c \
 		texture_selection.c \
 		textures.c \
 		move.c \
-		rotate_aux.c
+		rotate_aux.c \
+		musica.c
+		
 SRCS = $(addprefix $(SRCDIR)/, $(SRC))
 OBJS = $(addprefix $(OBJDIR)/, $(SRC:.c=.o))
 
@@ -47,7 +49,8 @@ all: $(NAME)
 $(NAME): $(OBJS) $(INCLUDE)
 	make -C ./libft
 	make -C ./minilibx-linux
-	$(CC) $(CCFLAGS) -g3 -o $(NAME) $(OBJS) -Llibft -Lminilibx-linux -lft -lmlx_Linux -lX11 -lXext -lm
+	$(CC) $(CCFLAGS) -g3 -o $(NAME) $(OBJS) -Llibft -Lminilibx-linux -lft -lmlx_Linux -lX11 -lXext -lm -lasound
+
 
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | $(OBJDIR)

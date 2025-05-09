@@ -6,7 +6,7 @@
 /*   By: manufern <manufern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/10 17:09:59 by igcastil          #+#    #+#             */
-/*   Updated: 2024/11/12 12:54:55 by manufern         ###   ########.fr       */
+/*   Updated: 2025/05/05 16:59:09 by manufern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,4 +98,5 @@ void	paint_first_view(t_connection *con)
 		draw_vertical_line(con, &ray);
 		ray.x++;
 	}
+	draw_minimap(con);
 }

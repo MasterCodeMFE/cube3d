@@ -6,7 +6,7 @@
 /*   By: manufern <manufern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/31 14:33:54 by manufern          #+#    #+#             */
-/*   Updated: 2024/11/11 12:37:46 by manufern         ###   ########.fr       */
+/*   Updated: 2025/05/07 12:10:12 by manufern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	rotate_left(t_connection *data)
 	data->old_time = data->time;
 	data->time = get_current_time_in_milliseconds();
 	rotate_player(data);
-	if (data->time - data->old_time >= 3)
+	if (data->time - data->old_time >= 1)
 	{
 		clear_screen(data);
 		paint_view(data);
@@ -83,6 +83,6 @@ void	rotate_right(t_connection *data)
 	data->player.plane_y = new_plane_y;
 	data->old_time = data->time;
 	data->time = get_current_time_in_milliseconds();
-	if (data->time - data->old_time >= 3)
+	if (data->time - data->old_time >= 1)
 		update_screen(data);
 }

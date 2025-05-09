@@ -6,15 +6,28 @@
 /*   By: manufern <manufern@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/11 11:25:03 by manufern          #+#    #+#             */
-/*   Updated: 2024/11/11 11:58:19 by manufern         ###   ########.fr       */
+/*   Updated: 2025/05/05 18:06:06 by manufern         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/cub3d.h"
 
-void	init_textures(t_connection *con)
+void init_weapon_texture(t_connection *con)
 {
-	int	i;
+	con->weapon.img_ptr = mlx_xpm_file_to_image(con->mlx_ptr,
+			"./arma/arma3.xpm", &con->weapon.width, &con->weapon.height);
+	if (!con->weapon.img_ptr)
+	{
+		ft_putstr_fd("Error: ./arma/arma.xpm not found\n", 2);
+		exit(EXIT_FAILURE);
+	}
+	con->weapon.img_px_ptr = mlx_get_data_addr(con->weapon.img_ptr,
+			&con->weapon.bpp, &con->weapon.line_len, &con->weapon.endian);
+}
+
+void init_textures(t_connection *con)
+{
+	int i;
 
 	con->img_array = malloc(sizeof(t_image) * 4);
 	if (!con->img_array)
@@ -31,6 +44,7 @@ void	init_textures(t_connection *con)
 		init_texture_data(con, i);
 		i++;
 	}
+	init_weapon_texture(con); // <-- Inicializa el arma después de las texturas normales
 }
 
 void	init_texture_image(t_connection *con, int i)
@@ -50,6 +64,7 @@ void	init_texture_data(t_connection *con, int i)
 	con->img_array[i].img_px_ptr = mlx_get_data_addr(con->img_array[i].img_ptr,
 			&con->img_array[i].bpp, &con->img_array[i].line_len,
 			&con->img_array[i].endian);
+	
 }
 
 void	free_textures_and_exit(t_connection *con, int i)

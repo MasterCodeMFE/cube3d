@@ -1,13 +1,14 @@
 
 
 
-NO textures/blue_stone.xpm
-SO textures/color_stone.xpm
-WE textures/grey_stone.xpm
-EA textures/purple_stone.xpm
+NO textures/simonkraft/bookshelf.xpm
+SO textures/simonkraft/bookshelf_01.xpm
+WE textures/simonkraft/bookshelf_02.xpm
+EA textures/simonkraft/bookshelf_03.xpm
 
-F 150,30,255
-C 100,255,20
+
+F 139,99,58
+C 171,154,137
 
         1111111111111111111111111
         1000000000110000000000001
