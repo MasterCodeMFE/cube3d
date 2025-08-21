@@ -1,0 +1,22 @@
+# Build artifacts
+*.o
+*.a
+cub3d
+obj/
+libft/*.o
+libft/libft.a
+minilibx-linux/obj/
+minilibx-linux/libmlx.a
+minilibx-linux/libmlx_Linux.a
+minilibx-linux/test/mlx-test
+minilibx-linux/test/*.o
+
+# Temporary files
+*~
+*.tmp
+*.swp
+.DS_Store
+
+# Editor files
+.vscode/
+.idea/
