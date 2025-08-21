@@ -14,10 +14,22 @@
 
 int	check_collision(t_connection *data, double new_x, double new_y)
 {
-	int x = (int)(new_x);
-	int y = (int)(new_y);
-	if (data->map_file.map_grid[y][x] == '1')
+	// Check multiple points around the player for better collision detection
+	double margin = COLLISION_RADIUS;
+	
+	// Check bounds first
+	if (new_x - margin < 0 || new_y - margin < 0 || 
+		new_x + margin >= data->map_file.map_num_cols || 
+		new_y + margin >= data->map_file.map_num_rows)
 		return (1);
+	
+	// Check four corners around the player position with margin
+	if (data->map_file.map_grid[(int)(new_y - margin)][(int)(new_x - margin)] == '1' ||
+		data->map_file.map_grid[(int)(new_y - margin)][(int)(new_x + margin)] == '1' ||
+		data->map_file.map_grid[(int)(new_y + margin)][(int)(new_x - margin)] == '1' ||
+		data->map_file.map_grid[(int)(new_y + margin)][(int)(new_x + margin)] == '1')
+		return (1);
+	
 	return (0);
 }
 

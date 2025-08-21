@@ -39,9 +39,9 @@
 # define EAST_COLOR 0x0000FF
 # define WEST_COLOR 0xFFFF00
 
-# define SPEED_ROTATE 0.03
-# define SPEED_WALK   0.1
-# define SPEED_STRAFE 0.1
+# define SPEED_ROTATE 0.05
+# define SPEED_WALK   0.08
+# define SPEED_STRAFE 0.08
 # define MAX_VIEW_ANGLE 30.0
 # define COLLISION_RADIUS 0.2
 # define PX_TEXTURE 300
