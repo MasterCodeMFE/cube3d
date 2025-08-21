@@ -33,9 +33,15 @@ void	free_resources(t_connection *data)
 void	handle_movement(int keysym, t_connection *data)
 {
 	if (keysym == XK_Left)
+	{
 		rotate_left(data);
+		update_movement(data);
+	}
 	else if (keysym == XK_Right)
+	{
 		rotate_right(data);
+		update_movement(data);
+	}
 	else if (keysym == XK_w)
 	{
 		move_up(data);

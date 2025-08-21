@@ -41,8 +41,8 @@ void init_xserv_windw(t_connection *con) {
     pthread_t music_thread;
 
     con->mlx_ptr = mlx_init();
-    con->wdw_wdth = 3000;
-    con->wdw_hgth = 1500;
+    con->wdw_wdth = 1280;
+    con->wdw_hgth = 720;
     con->win_ptr = mlx_new_window(con->mlx_ptr, con->wdw_wdth, con->wdw_hgth, "cub3d");
     con->img.img_ptr = mlx_new_image(con->mlx_ptr, con->wdw_wdth, con->wdw_hgth);
     con->img.img_px_ptr = mlx_get_data_addr(con->img.img_ptr, &con->img.bpp, &con->img.line_len, &con->img.endian);
