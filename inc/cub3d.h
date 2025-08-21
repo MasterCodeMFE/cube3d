@@ -39,9 +39,11 @@
 # define EAST_COLOR 0x0000FF
 # define WEST_COLOR 0xFFFF00
 
-# define SPEED_ROTATE 0.06
-# define SPEED_WALK   0.2
+# define SPEED_ROTATE 0.03
+# define SPEED_WALK   0.1
+# define SPEED_STRAFE 0.1
 # define MAX_VIEW_ANGLE 30.0
+# define COLLISION_RADIUS 0.2
 # define PX_TEXTURE 300
 
 //musica
@@ -249,6 +251,11 @@ void		free_textures_and_exit(t_connection *con, int i);
 int			get_texture_color(t_image *texture, int texX, int texY);
 void *play_music(void *arg);
 void    draw_minimap(t_connection *con);
+
+// Funciones de colisión mejoradas estilo Doom
+int			check_collision(t_connection *data, double new_x, double new_y);
+void		move_with_collision(t_connection *data, double move_x, double move_y);
+void		update_movement(t_connection *data);
 
 long get_time_ms(void);
 

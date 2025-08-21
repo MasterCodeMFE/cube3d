@@ -37,13 +37,25 @@ void	handle_movement(int keysym, t_connection *data)
 	else if (keysym == XK_Right)
 		rotate_right(data);
 	else if (keysym == XK_w)
+	{
 		move_up(data);
+		update_movement(data);
+	}
 	else if (keysym == XK_s)
+	{
 		move_down(data);
+		update_movement(data);
+	}
 	else if (keysym == XK_d)
+	{
 		move_right(data);
+		update_movement(data);
+	}
 	else if (keysym == XK_a)
+	{
 		move_left(data);
+		update_movement(data);
+	}
 }
 
 int	handle_key_input(int keysym, t_connection *data)
