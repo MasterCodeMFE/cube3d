@@ -181,7 +181,139 @@ void    draw_minimap(t_connection *con)
     // marcadores) dan un aspecto más agradable y funcional similar a una brújula en un
     // entorno 3D, pero no renderizan la geometría del mapa con altura o perspectiva.
     // Lograr un renderizado 3D real dentro del minimapa requeriría un enfoque mucho más complejo.
+    
+    // --- Draw FOV rays ---
+    draw_fov_rays(con, minimap_center_x, minimap_center_y);
+    
 	draw_weapon(con);
+}
+
+// Blend two colors with alpha
+int	blend_colors(int base_color, int overlay_color, double alpha)
+{
+	int base_r = (base_color >> 16) & 0xFF;
+	int base_g = (base_color >> 8) & 0xFF;
+	int base_b = base_color & 0xFF;
+	
+	int overlay_r = (overlay_color >> 16) & 0xFF;
+	int overlay_g = (overlay_color >> 8) & 0xFF;
+	int overlay_b = overlay_color & 0xFF;
+	
+	int result_r = (int)(base_r * (1.0 - alpha) + overlay_r * alpha);
+	int result_g = (int)(base_g * (1.0 - alpha) + overlay_g * alpha);
+	int result_b = (int)(base_b * (1.0 - alpha) + overlay_b * alpha);
+	
+	return ((result_r << 16) | (result_g << 8) | result_b);
+}
+
+// Draw a single ray from center to hit point
+void	draw_single_ray(t_connection *con, int center_x, int center_y, double ray_angle, double max_dist)
+{
+	double ray_x = con->player.pos_x;
+	double ray_y = con->player.pos_y;
+	double ray_dx = cos(ray_angle);
+	double ray_dy = sin(ray_angle);
+	double step = 0.1;
+	double distance = 0.0;
+	int hit = 0;
+	
+	// Cast the ray
+	while (distance < max_dist && !hit)
+	{
+		ray_x += ray_dx * step;
+		ray_y += ray_dy * step;
+		distance += step;
+		
+		// Check bounds
+		if (ray_x < 0 || ray_y < 0 || 
+			ray_x >= con->map_file.map_num_cols || 
+			ray_y >= con->map_file.map_num_rows)
+			break;
+			
+		// Check for wall
+		if (con->map_file.map_grid[(int)ray_y][(int)ray_x] == '1')
+			hit = 1;
+	}
+	
+	// Draw the ray on minimap
+	double rel_x = (ray_x - con->player.pos_x) * MINIMAP_ZOOM_FACTOR;
+	double rel_y = (ray_y - con->player.pos_y) * MINIMAP_ZOOM_FACTOR;
+	
+	int end_x = center_x + (int)rel_x;
+	int end_y = center_y + (int)rel_y;
+	
+	// Choose color based on distance and hit
+	int color;
+	if (hit)
+	{
+		if (distance < max_dist * 0.3)
+			color = RAY_COLOR_CLOSE;
+		else
+			color = RAY_COLOR_FAR;
+	}
+	else
+		color = RAY_COLOR_MISS;
+	
+	// Draw line from center to end point
+	int dx = abs(end_x - center_x);
+	int dy = abs(end_y - center_y);
+	int sx = center_x < end_x ? 1 : -1;
+	int sy = center_y < end_y ? 1 : -1;
+	int err = dx - dy;
+	int x = center_x;
+	int y = center_y;
+	
+	while (1)
+	{
+		// Check if point is within minimap circle
+		double dist_sq = (x - center_x) * (x - center_x) + (y - center_y) * (y - center_y);
+		if (dist_sq <= MINIMAP_PIXEL_RADIUS * MINIMAP_PIXEL_RADIUS)
+			draw_pixel(con, x, y, color);
+		
+		if (x == end_x && y == end_y)
+			break;
+			
+		int e2 = 2 * err;
+		if (e2 > -dy)
+		{
+			err -= dy;
+			x += sx;
+		}
+		if (e2 < dx)
+		{
+			err += dx;
+			y += sy;
+		}
+	}
+}
+
+// Draw FOV rays on minimap
+void	draw_fov_rays(t_connection *con, int center_x, int center_y)
+{
+	double player_angle = atan2(con->player.dir_y, con->player.dir_x);
+	double fov = M_PI / 3.0; // 60 degrees FOV
+	double ray_step = fov / (FOV_RAYS_COUNT - 1);
+	double start_angle = player_angle - fov / 2.0;
+	double max_ray_distance = 10.0; // Maximum ray distance
+	int i;
+	
+	// Draw each ray
+	i = 0;
+	while (i < FOV_RAYS_COUNT)
+	{
+		double ray_angle = start_angle + i * ray_step;
+		draw_single_ray(con, center_x, center_y, ray_angle, max_ray_distance);
+		i++;
+	}
+}
+
+// Enhanced minimap with raycasting visualization
+void	draw_minimap_with_rays(t_connection *con)
+{
+	// First draw the regular minimap
+	draw_minimap(con);
+	
+	// Then add the ray visualization (already called in draw_minimap)
 }
 
 int	rgb_to_int(int *rgb)

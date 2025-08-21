@@ -73,6 +73,24 @@ int	handle_key_input(int keysym, t_connection *data)
 	return (0);
 }
 
+// New key press handler for enhanced movement
+int	handle_key_press(int keysym, t_connection *data)
+{
+	if (keysym == XK_Escape)
+		free_resources(data);
+	else if (keysym >= 0 && keysym < 256)
+		data->player.keys_pressed[keysym] = 1;
+	return (0);
+}
+
+// New key release handler for enhanced movement
+int	handle_key_release(int keysym, t_connection *data)
+{
+	if (keysym >= 0 && keysym < 256)
+		data->player.keys_pressed[keysym] = 0;
+	return (0);
+}
+
 int	terminate_program(t_connection *data)
 {
 	mlx_destroy_image(data->mlx_ptr, data->img.img_ptr);
@@ -81,4 +99,29 @@ int	terminate_program(t_connection *data)
 	free(data->mlx_ptr);
 	free_map_file_and_exit("freeing map file resources", NULL, &data->map_file);
 	exit(1);
+}
+
+// Game loop for smooth movement
+int	update_game_loop(t_connection *data)
+{
+	long current_time = get_current_time_in_milliseconds();
+	double delta_time = (current_time - data->old_time) / 1000.0; // Convert to seconds
+	
+	// Cap delta time to prevent large jumps
+	if (delta_time > 0.05)
+		delta_time = 0.05;
+	
+	// Update movement
+	update_player_movement(data, delta_time);
+	
+	// Update screen
+	clear_screen(data);
+	paint_view(data);
+	mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img.img_ptr, 0, 0);
+	
+	// Update timing
+	data->old_time = data->time;
+	data->time = current_time;
+	
+	return (0);
 }
