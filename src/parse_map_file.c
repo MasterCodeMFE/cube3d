@@ -208,7 +208,7 @@ void	validate_parsed_elements(t_map_file *map_file)
 int	is_valid_map_character(char c)
 {
 	return (c == '0' || c == '1' || c == 'N' || c == 'S' || 
-			c == 'E' || c == 'W' || c == ' ' || c == '\n');
+			c == 'E' || c == 'W' || c == ' ' || c == '\n' || c == '\0');
 }
 
 // Validate overall map integrity
