@@ -47,7 +47,11 @@ void init_xserv_windw(t_connection *con) {
     con->img.img_ptr = mlx_new_image(con->mlx_ptr, con->wdw_wdth, con->wdw_hgth);
     con->img.img_px_ptr = mlx_get_data_addr(con->img.img_ptr, &con->img.bpp, &con->img.line_len, &con->img.endian);
     con->time = get_current_time_in_milliseconds();
+    con->old_time = con->time;
     init_textures(con);
+    
+    // Initialize enhanced movement system
+    init_player_movement(con);
 
     // Iniciar hilo de música antes de entrar en el bucle de eventos
     pthread_create(&music_thread, NULL, play_music, NULL);
@@ -56,8 +60,10 @@ void init_xserv_windw(t_connection *con) {
     // Asegurarse de que las teclas no se acumulen
 
     if (texture_is_ok(con)) {
-        mlx_hook(con->win_ptr, KeyPress, KeyPressMask, handle_key_input, con);
+        mlx_hook(con->win_ptr, KeyPress, KeyPressMask, handle_key_press, con);
+        mlx_hook(con->win_ptr, KeyRelease, KeyReleaseMask, handle_key_release, con);
         mlx_hook(con->win_ptr, DestroyNotify, NoEventMask, terminate_program, con);
+        mlx_loop_hook(con->mlx_ptr, update_game_loop, con);
         clear_screen(con);
         paint_first_view(con);
         mlx_put_image_to_window(con->mlx_ptr, con->win_ptr, con->img.img_ptr, 0, 0);

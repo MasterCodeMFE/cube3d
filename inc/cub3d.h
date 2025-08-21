@@ -46,6 +46,12 @@
 # define COLLISION_RADIUS 0.2
 # define PX_TEXTURE 300
 
+// Enhanced movement constants
+# define ACCELERATION 0.15
+# define FRICTION 0.85
+# define MAX_VELOCITY 0.12
+# define MOUSE_SENSITIVITY 0.002
+
 //musica
 #define SAMPLE_RATE 44100
 #define AMPLITUDE 0.6  // Reducido para evitar distorsión
@@ -64,6 +70,11 @@
 #define MINIMAP_BORDER_THICKNESS 3 // Grosor del borde del minimapa en píxeles
 #define COMPASS_MARKER_SIZE 4 // Tamaño de los marcadores de brújula (N, S, E, O)
 
+// --- Ray visualization in minimap ---
+#define FOV_RAYS_COUNT 21 // Number of rays to show in minimap FOV (odd number for center ray)
+#define RAY_LENGTH_FACTOR 0.5 // Factor to control ray length visualization (0.0 to 1.0)
+#define RAY_ALPHA 128 // Alpha value for ray transparency (0-255)
+
 // --- Colors (in ARGB format) - Paleta estilo "moderno" ---
 #define MINIMAP_WALL_COLOR 0x00555555 // Dark Grey para paredes
 #define MINIMAP_EMPTY_COLOR 0x00AAAAAA // Light Grey para espacio vacío (carretera/área)
@@ -73,6 +84,12 @@
 #define COMPASS_SOUTH_COLOR 0xFF0000FF // Blue para Sur
 #define COMPASS_EAST_COLOR 0xFF00FF00 // Green para Este
 #define COMPASS_WEST_COLOR 0xFFFFFF00 // Yellow para Oeste
+
+// --- Ray visualization colors ---
+#define RAY_COLOR_CLOSE 0x8000FF00 // Semi-transparent green for close hits
+#define RAY_COLOR_FAR 0x40FFFF00 // Semi-transparent yellow for far hits
+#define RAY_COLOR_MISS 0x20FF0000 // Very transparent red for misses
+#define FOV_COLOR 0x3000FFFF // Semi-transparent cyan for FOV cone
 
 // --- Weapon HUD Colors (Estilo DOOM) ---
 #define DOOM_SHOTGUN_COLOR 0xA0A0A0 // Un gris más claro para el arma
@@ -133,6 +150,12 @@ typedef struct s_player
 	double move_speed;  // Velocidad de movimiento
 	double rot_speed;   // Velocidad de rotación
 	double view_angle;  // Ángulo de vista (para mirar arriba y abajo)
+	// Momentum-based movement
+	double vel_x;       // Velocidad en X
+	double vel_y;       // Velocidad en Y
+	double accel;       // Aceleración
+	double friction;    // Fricción/desaceleración
+	int	   keys_pressed[256]; // Estado de teclas presionadas
 } t_player;
 
 typedef struct s_connection
@@ -214,6 +237,9 @@ void		free_resources(t_connection *data);
 void		init_xserv_windw(t_connection *con);
 void		parse_map_file_element(t_map_file *map_file);
 void		parse_map_file(char *filename, t_map_file *map_file);
+void		validate_parsed_elements(t_map_file *map_file);
+void		validate_map_integrity(t_map_file *map_file);
+int			is_valid_map_character(char c);
 int			parse_no_texture(char *line, t_map_file *map_fl);
 int			parse_so_texture(char *line, t_map_file *map_fl);
 int			parse_we_texture(char *line, t_map_file *map_fl);
@@ -256,6 +282,20 @@ void    draw_minimap(t_connection *con);
 int			check_collision(t_connection *data, double new_x, double new_y);
 void		move_with_collision(t_connection *data, double move_x, double move_y);
 void		update_movement(t_connection *data);
+
+// Enhanced movement functions
+void		init_player_movement(t_connection *data);
+void		update_player_movement(t_connection *data, double delta_time);
+void		apply_movement_input(t_connection *data, double delta_time);
+int			handle_key_press(int keysym, t_connection *data);
+int			handle_key_release(int keysym, t_connection *data);
+int			update_game_loop(t_connection *data);
+
+// Enhanced minimap with raycasting visualization
+void		draw_minimap_with_rays(t_connection *con);
+void		draw_fov_rays(t_connection *con, int center_x, int center_y);
+void		draw_single_ray(t_connection *con, int center_x, int center_y, double ray_angle, double max_dist);
+int			blend_colors(int base_color, int overlay_color, double alpha);
 
 long get_time_ms(void);
 
