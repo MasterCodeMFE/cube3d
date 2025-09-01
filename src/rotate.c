@@ -37,13 +37,21 @@ void	rotate_player(t_connection *data)
 
 void	rotate_left(t_connection *data)
 {
+	long current_time = get_current_time_in_milliseconds();
+	double dt = (current_time - data->time) / 1000.0;
 	double	rotate_speed;
 	double	new_dir_x;
 	double	new_dir_y;
 	double	new_plane_x;
 	double	new_plane_y;
 
-	rotate_speed = -SPEED_ROTATE;
+	// Cap delta time to prevent large jumps
+	if (dt > 0.05)
+		dt = 0.05;
+	if (dt < 0.0)
+		dt = 0.016; // Fallback to ~60fps timing
+
+	rotate_speed = -SPEED_ROTATE * dt * 60.0;
 	new_dir_x = data->player.dir_x * cos(rotate_speed)
 		- data->player.dir_y * sin(rotate_speed);
 	new_dir_y = data->player.dir_x * sin(rotate_speed)
@@ -56,7 +64,6 @@ void	rotate_left(t_connection *data)
 		+ data->player.plane_y * cos(rotate_speed);
 	data->player.plane_x = new_plane_x;
 	data->player.plane_y = new_plane_y;
-	update_screen(data);
 }
 
 void	update_screen(t_connection *data)
@@ -70,13 +77,21 @@ void	update_screen(t_connection *data)
 
 void	rotate_right(t_connection *data)
 {
+	long current_time = get_current_time_in_milliseconds();
+	double dt = (current_time - data->time) / 1000.0;
 	double	rotate_speed;
 	double	new_dir_x;
 	double	new_dir_y;
 	double	new_plane_x;
 	double	new_plane_y;
 
-	rotate_speed = SPEED_ROTATE;
+	// Cap delta time to prevent large jumps
+	if (dt > 0.05)
+		dt = 0.05;
+	if (dt < 0.0)
+		dt = 0.016; // Fallback to ~60fps timing
+
+	rotate_speed = SPEED_ROTATE * dt * 60.0;
 	new_dir_x = data->player.dir_x * cos(rotate_speed)
 		- data->player.dir_y * sin(rotate_speed);
 	new_dir_y = data->player.dir_x * sin(rotate_speed)

@@ -48,6 +48,9 @@ void init_xserv_windw(t_connection *con) {
     con->img.img_px_ptr = mlx_get_data_addr(con->img.img_ptr, &con->img.bpp, &con->img.line_len, &con->img.endian);
     con->time = get_current_time_in_milliseconds();
     con->old_time = con->time;
+    // Initialize FPS tracking
+    con->fps_last_time = con->time;
+    con->fps_frame_count = 0;
     init_textures(con);
     
     // Initialize enhanced movement system

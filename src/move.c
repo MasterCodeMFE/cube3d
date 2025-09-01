@@ -12,6 +12,22 @@
 
 #include "../inc/cub3d.h"
 
+// FPS tracking function
+void	update_fps_counter(t_connection *data)
+{
+	long current_time = get_current_time_in_milliseconds();
+	
+	data->fps_frame_count++;
+	
+	// Print FPS every second
+	if (current_time - data->fps_last_time >= 1000)
+	{
+		printf("FPS: %d\n", data->fps_frame_count);
+		data->fps_frame_count = 0;
+		data->fps_last_time = current_time;
+	}
+}
+
 // Initialize player movement system
 void	init_player_movement(t_connection *data)
 {
@@ -157,29 +173,83 @@ void	update_player_movement(t_connection *data, double delta_time)
 
 void	update_movement(t_connection *data)
 {
+	long current_time = get_current_time_in_milliseconds();
+	double dt = (current_time - data->time) / 1000.0;
+	
+	// Cap delta time to prevent large jumps
+	if (dt > 0.05)
+		dt = 0.05;
+	if (dt < 0.0)
+		dt = 0.016; // Fallback to ~60fps timing
+	
+	// Paint scene to buffer
 	clear_screen(data);
 	paint_view(data);
+	
+	// Single call to mlx_put_image_to_window per frame
 	mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img.img_ptr, 0, 0);
-	data->time = get_current_time_in_milliseconds();
+	
+	// Update timing at the end
+	data->time = current_time;
 }
 
-// Legacy movement functions for compatibility
+// Legacy movement functions for compatibility - now using delta time
 void	move_up(t_connection *data)
 {
-	move_with_collision(data, data->player.dir_x * SPEED_WALK, data->player.dir_y * SPEED_WALK);
+	long current_time = get_current_time_in_milliseconds();
+	double dt = (current_time - data->time) / 1000.0;
+	
+	// Cap delta time to prevent large jumps
+	if (dt > 0.05)
+		dt = 0.05;
+	if (dt < 0.0)
+		dt = 0.016; // Fallback to ~60fps timing
+		
+	move_with_collision(data, data->player.dir_x * SPEED_WALK * dt * 60.0, 
+						data->player.dir_y * SPEED_WALK * dt * 60.0);
 }
 
 void	move_down(t_connection *data)
 {
-	move_with_collision(data, -data->player.dir_x * SPEED_WALK, -data->player.dir_y * SPEED_WALK);
+	long current_time = get_current_time_in_milliseconds();
+	double dt = (current_time - data->time) / 1000.0;
+	
+	// Cap delta time to prevent large jumps
+	if (dt > 0.05)
+		dt = 0.05;
+	if (dt < 0.0)
+		dt = 0.016; // Fallback to ~60fps timing
+		
+	move_with_collision(data, -data->player.dir_x * SPEED_WALK * dt * 60.0, 
+						-data->player.dir_y * SPEED_WALK * dt * 60.0);
 }
 
 void	move_left(t_connection *data)
 {
-	move_with_collision(data, data->player.dir_y * SPEED_STRAFE, -data->player.dir_x * SPEED_STRAFE);
+	long current_time = get_current_time_in_milliseconds();
+	double dt = (current_time - data->time) / 1000.0;
+	
+	// Cap delta time to prevent large jumps
+	if (dt > 0.05)
+		dt = 0.05;
+	if (dt < 0.0)
+		dt = 0.016; // Fallback to ~60fps timing
+		
+	move_with_collision(data, data->player.dir_y * SPEED_STRAFE * dt * 60.0, 
+						-data->player.dir_x * SPEED_STRAFE * dt * 60.0);
 }
 
 void	move_right(t_connection *data)
 {
-	move_with_collision(data, -data->player.dir_y * SPEED_STRAFE, data->player.dir_x * SPEED_STRAFE);
+	long current_time = get_current_time_in_milliseconds();
+	double dt = (current_time - data->time) / 1000.0;
+	
+	// Cap delta time to prevent large jumps
+	if (dt > 0.05)
+		dt = 0.05;
+	if (dt < 0.0)
+		dt = 0.016; // Fallback to ~60fps timing
+		
+	move_with_collision(data, -data->player.dir_y * SPEED_STRAFE * dt * 60.0, 
+						data->player.dir_x * SPEED_STRAFE * dt * 60.0);
 }

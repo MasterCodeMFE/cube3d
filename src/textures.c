@@ -82,7 +82,26 @@ void	free_textures_and_exit(t_connection *con, int i)
 int	get_texture_color(t_image *texture, int texX, int texY)
 {
 	int	offset;
+	
+	// Bounds checking to prevent segmentation faults
+	if (!texture || !texture->img_px_ptr)
+		return (0x000000); // Return black if texture is invalid
+		
+	if (texX < 0)
+		texX = 0;
+	if (texY < 0)
+		texY = 0;
+	if (texX >= texture->width)
+		texX = texture->width - 1;
+	if (texY >= texture->height)
+		texY = texture->height - 1;
 
 	offset = (texY * texture->line_len) + (texX * (texture->bpp >> 3));
+	
+	// Additional bounds check for the offset
+	int max_offset = texture->height * texture->line_len;
+	if (offset < 0 || offset >= max_offset - 4) // -4 for int size
+		return (0x000000);
+		
 	return (*(int *)(texture->img_px_ptr + offset));
 }

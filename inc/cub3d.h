@@ -168,6 +168,9 @@ typedef struct s_connection
 	int			right_key_pressed;
 	long		time;
 	long		old_time;
+	// FPS tracking
+	long		fps_last_time;
+	int			fps_frame_count;
 	t_map_file	map_file;
 	t_image		img;
 	t_player	player;
@@ -298,6 +301,9 @@ void		draw_single_ray(t_connection *con, int center_x, int center_y, double ray_
 int			blend_colors(int base_color, int overlay_color, double alpha);
 
 long get_time_ms(void);
+
+// FPS tracking function
+void update_fps_counter(t_connection *data);
 
 
 #endif
