@@ -1,0 +1,13 @@
+# Build artifacts
+obj/
+cub3d
+libft/libft.a
+libft/*.o
+minilibx-linux/libmlx.a
+minilibx-linux/libmlx_Linux.a
+minilibx-linux/obj/
+minilibx-linux/test/mlx-test
+minilibx-linux/test/*.o
+*.core
+*~
+.DS_Store
