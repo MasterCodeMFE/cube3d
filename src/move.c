@@ -21,6 +21,16 @@ void init_player_movement(t_connection *data)
     data->player.vel_y = 0.0;
     data->player.accel = ACCELERATION;
     data->player.friction = FRICTION;
+    
+    // Initialize rotation momentum
+    data->player.rot_vel = 0.0;
+    data->player.rot_accel = ROT_ACCELERATION;
+    data->player.rot_friction = ROT_FRICTION;
+    
+    // Initialize arrow key flags
+    data->left_key_pressed = 0;
+    data->right_key_pressed = 0;
+    
     i = 0;
     while (i < 256)
     {
@@ -132,23 +142,35 @@ void update_player_movement(t_connection *data, double delta_time)
     move_with_collision(data, data->player.vel_x * delta_time * 60.0, 
                     data->player.vel_y * delta_time * 60.0);
     
-    // Handle rotation
+    // Handle rotation with momentum
     /* Use connection-level flags for arrow keys to avoid indexing keysyms directly
        (XK_Left/XK_Right are large values and cause out-of-bounds accesses). */
+    double target_rot_vel = 0.0;
+    
     if (data->left_key_pressed)
-    {
-        double old_dir_x = data->player.dir_x;
-        double rot_speed = SPEED_ROTATE * delta_time * 60.0;
-        data->player.dir_x = data->player.dir_x * cos(-rot_speed) - data->player.dir_y * sin(-rot_speed);
-        data->player.dir_y = old_dir_x * sin(-rot_speed) + data->player.dir_y * cos(-rot_speed);
-        double old_plane_x = data->player.plane_x;
-        data->player.plane_x = data->player.plane_x * cos(-rot_speed) - data->player.plane_y * sin(-rot_speed);
-        data->player.plane_y = old_plane_x * sin(-rot_speed) + data->player.plane_y * cos(-rot_speed);
-    }
+        target_rot_vel -= MAX_ROT_VELOCITY;
     if (data->right_key_pressed)
+        target_rot_vel += MAX_ROT_VELOCITY;
+    
+    // Apply angular acceleration/deceleration
+    double rot_accel_factor = data->player.rot_accel * delta_time;
+    data->player.rot_vel += (target_rot_vel - data->player.rot_vel) * rot_accel_factor;
+    
+    // Apply angular friction when no input
+    if (target_rot_vel == 0.0)
+        data->player.rot_vel *= data->player.rot_friction;
+    
+    // Clamp angular velocity
+    if (data->player.rot_vel > MAX_ROT_VELOCITY)
+        data->player.rot_vel = MAX_ROT_VELOCITY;
+    else if (data->player.rot_vel < -MAX_ROT_VELOCITY)
+        data->player.rot_vel = -MAX_ROT_VELOCITY;
+    
+    // Apply rotation if there's angular velocity
+    if (fabs(data->player.rot_vel) > 0.001)
     {
+        double rot_speed = data->player.rot_vel * delta_time;
         double old_dir_x = data->player.dir_x;
-        double rot_speed = SPEED_ROTATE * delta_time * 60.0;
         data->player.dir_x = data->player.dir_x * cos(rot_speed) - data->player.dir_y * sin(rot_speed);
         data->player.dir_y = old_dir_x * sin(rot_speed) + data->player.dir_y * cos(rot_speed);
         double old_plane_x = data->player.plane_x;

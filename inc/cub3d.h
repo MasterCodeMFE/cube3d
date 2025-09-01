@@ -24,7 +24,6 @@
 # include <X11/keysym.h>
 # include <X11/X.h>
 # include <sys/time.h>
-# include <alsa/asoundlib.h>
 # include <unistd.h>
 # include <pthread.h>
 
@@ -51,6 +50,11 @@
 # define FRICTION 0.85
 # define MAX_VELOCITY 0.12
 # define MOUSE_SENSITIVITY 0.002
+
+// Rotation momentum constants
+# define ROT_ACCELERATION 3.0
+# define ROT_FRICTION 0.8
+# define MAX_ROT_VELOCITY 2.5
 
 //musica
 #define SAMPLE_RATE 44100
@@ -155,6 +159,10 @@ typedef struct s_player
 	double vel_y;       // Velocidad en Y
 	double accel;       // Aceleración
 	double friction;    // Fricción/desaceleración
+	// Rotation momentum
+	double rot_vel;     // current angular velocity
+	double rot_accel;   // angular acceleration when rotating
+	double rot_friction; // angular damping when no input
 	int	   keys_pressed[256]; // Estado de teclas presionadas
 } t_player;
 

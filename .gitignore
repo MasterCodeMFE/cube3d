@@ -1,0 +1,25 @@
+# Build artifacts
+cub3d
+obj/
+*.o
+*.a
+
+# Library builds
+libft/libft.a
+libft/*.o
+minilibx-linux/libmlx.a
+minilibx-linux/libmlx_Linux.a
+minilibx-linux/obj/
+minilibx-linux/test/mlx-test
+minilibx-linux/test/*.o
+minilibx-linux/makefile.gen
+minilibx-linux/test/makefile.gen
+
+# Temporary files
+*~
+*.tmp
+.DS_Store
+
+# Editor files
+*.swp
+*.swo
