@@ -24,9 +24,7 @@
 # include <X11/keysym.h>
 # include <X11/X.h>
 # include <sys/time.h>
-# include <alsa/asoundlib.h>
 # include <unistd.h>
-# include <pthread.h>
 
 # define NUM_MAP_ELEMENTS 6
 # define MAP_ROWS 100
@@ -39,24 +37,18 @@
 # define EAST_COLOR 0x0000FF
 # define WEST_COLOR 0xFFFF00
 
-# define SPEED_ROTATE 0.05
-# define SPEED_WALK   0.08
-# define SPEED_STRAFE 0.08
+# define SPEED_ROTATE 0.045  // Doom-style rotation speed
+# define SPEED_WALK   0.08   // Doom-style movement speed
+# define SPEED_STRAFE 0.08   // Doom-style strafe speed
 # define MAX_VIEW_ANGLE 30.0
 # define COLLISION_RADIUS 0.2
 # define PX_TEXTURE 300
 
-// Enhanced movement constants
-# define ACCELERATION 0.15
-# define FRICTION 0.85
-# define MAX_VELOCITY 0.12
+// Enhanced movement constants - removed momentum fields for Doom-style
 # define MOUSE_SENSITIVITY 0.002
 
-//musica
-#define SAMPLE_RATE 44100
-#define AMPLITUDE 0.6  // Reducido para evitar distorsión
-#define NOTE_DURATION 0.15  // Notas más cortas
-#define SOUND_BUFFER_SIZE ((int)(SAMPLE_RATE * NOTE_DURATION))
+//musica - removed ALSA dependencies
+//Audio system disabled for better compatibility
 
 #ifndef M_PI // Asegura que M_PI esté definido
     #define M_PI 3.14159265358979323846
@@ -150,11 +142,7 @@ typedef struct s_player
 	double move_speed;  // Velocidad de movimiento
 	double rot_speed;   // Velocidad de rotación
 	double view_angle;  // Ángulo de vista (para mirar arriba y abajo)
-	// Momentum-based movement
-	double vel_x;       // Velocidad en X
-	double vel_y;       // Velocidad en Y
-	double accel;       // Aceleración
-	double friction;    // Fricción/desaceleración
+	// Doom-style movement: immediate velocities, no inertia
 	int	   keys_pressed[256]; // Estado de teclas presionadas
 } t_player;
 
@@ -283,7 +271,7 @@ int			check_collision(t_connection *data, double new_x, double new_y);
 void		move_with_collision(t_connection *data, double move_x, double move_y);
 void		update_movement(t_connection *data);
 
-// Enhanced movement functions
+// Enhanced movement functions (Doom-style: immediate velocities)
 void		init_player_movement(t_connection *data);
 void		update_player_movement(t_connection *data, double delta_time);
 void		apply_movement_input(t_connection *data, double delta_time);

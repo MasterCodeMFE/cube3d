@@ -38,8 +38,6 @@ int	texture_is_ok(t_connection *con)
 }
 
 void init_xserv_windw(t_connection *con) {
-    pthread_t music_thread;
-
     con->mlx_ptr = mlx_init();
     con->wdw_wdth = 1280;
     con->wdw_hgth = 720;
@@ -53,11 +51,7 @@ void init_xserv_windw(t_connection *con) {
     // Initialize enhanced movement system
     init_player_movement(con);
 
-    // Iniciar hilo de música antes de entrar en el bucle de eventos
-    pthread_create(&music_thread, NULL, play_music, NULL);
-    pthread_detach(music_thread); // Hilo separado para no bloquear el loop
-
-    // Asegurarse de que las teclas no se acumulen
+    // Music system removed for better compatibility
 
     if (texture_is_ok(con)) {
         mlx_hook(con->win_ptr, KeyPress, KeyPressMask, handle_key_press, con);

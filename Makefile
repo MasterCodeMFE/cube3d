@@ -49,7 +49,7 @@ all: $(NAME)
 $(NAME): $(OBJS) $(INCLUDE)
 	make -C ./libft
 	make -C ./minilibx-linux
-	$(CC) $(CCFLAGS) -g3 -o $(NAME) $(OBJS) -Llibft -Lminilibx-linux -lft -lmlx_Linux -lX11 -lXext -lm -lasound
+	$(CC) $(CCFLAGS) -g3 -o $(NAME) $(OBJS) -Llibft -Lminilibx-linux -lft -lmlx_Linux -lX11 -lXext -lm
 
 
 

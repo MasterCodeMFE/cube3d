@@ -12,15 +12,16 @@
 
 #include "../inc/cub3d.h"
 
-// Initialize player movement system
+// Initialize player movement system (Doom-style: no momentum)
 void init_player_movement(t_connection *data)
 {
     int i;
     
-    data->player.vel_x = 0.0;
-    data->player.vel_y = 0.0;
-    data->player.accel = ACCELERATION;
-    data->player.friction = FRICTION;
+    // Set Doom-style movement speeds
+    data->player.move_speed = SPEED_WALK;
+    data->player.rot_speed = SPEED_ROTATE;
+    
+    // Clear key state
     i = 0;
     while (i < 256)
     {
@@ -72,73 +73,52 @@ void move_with_collision(t_connection *data, double move_x, double move_y)
     }
 }
 
-// Apply movement input based on pressed keys
+// Apply movement input based on pressed keys (Doom-style: immediate movement)
 void apply_movement_input(t_connection *data, double delta_time)
 {
-    double target_vel_x = 0.0;
-    double target_vel_y = 0.0;
-    double max_vel = MAX_VELOCITY;
+    double move_x = 0.0;
+    double move_y = 0.0;
+    double move_speed = data->player.move_speed;
     
-    // Calculate target velocity based on input
+    // Calculate immediate movement based on input (no acceleration/friction)
     if (data->player.keys_pressed[XK_w] || data->player.keys_pressed[XK_W])
     {
-        target_vel_x += data->player.dir_x * max_vel;
-        target_vel_y += data->player.dir_y * max_vel;
+        move_x += data->player.dir_x * move_speed * delta_time * 60.0;
+        move_y += data->player.dir_y * move_speed * delta_time * 60.0;
     }
     if (data->player.keys_pressed[XK_s] || data->player.keys_pressed[XK_S])
     {
-        target_vel_x -= data->player.dir_x * max_vel;
-        target_vel_y -= data->player.dir_y * max_vel;
+        move_x -= data->player.dir_x * move_speed * delta_time * 60.0;
+        move_y -= data->player.dir_y * move_speed * delta_time * 60.0;
     }
     if (data->player.keys_pressed[XK_a] || data->player.keys_pressed[XK_A])
     {
-        target_vel_x += data->player.dir_y * max_vel;
-        target_vel_y -= data->player.dir_x * max_vel;
+        move_x += data->player.dir_y * move_speed * delta_time * 60.0;
+        move_y -= data->player.dir_x * move_speed * delta_time * 60.0;
     }
     if (data->player.keys_pressed[XK_d] || data->player.keys_pressed[XK_D])
     {
-        target_vel_x -= data->player.dir_y * max_vel;
-        target_vel_y += data->player.dir_x * max_vel;
+        move_x -= data->player.dir_y * move_speed * delta_time * 60.0;
+        move_y += data->player.dir_x * move_speed * delta_time * 60.0;
     }
     
-    // Apply acceleration/deceleration
-    double accel_factor = data->player.accel * delta_time;
-    data->player.vel_x += (target_vel_x - data->player.vel_x) * accel_factor;
-    data->player.vel_y += (target_vel_y - data->player.vel_y) * accel_factor;
-    
-    // Apply friction when no input
-    if (target_vel_x == 0.0 && target_vel_y == 0.0)
-    {
-        data->player.vel_x *= data->player.friction;
-        data->player.vel_y *= data->player.friction;
-    }
-    
-    // Clamp velocity to max
-    double vel_magnitude = sqrt(data->player.vel_x * data->player.vel_x + 
-                        data->player.vel_y * data->player.vel_y);
-    if (vel_magnitude > max_vel)
-    {
-        data->player.vel_x = (data->player.vel_x / vel_magnitude) * max_vel;
-        data->player.vel_y = (data->player.vel_y / vel_magnitude) * max_vel;
-    }
+    // Apply movement with collision detection (immediate movement)
+    move_with_collision(data, move_x, move_y);
 }
 
-// Update player movement with time-based calculations
+// Update player movement with time-based calculations (Doom-style: immediate velocities)
 void update_player_movement(t_connection *data, double delta_time)
 {
+    // Apply immediate movement based on input
     apply_movement_input(data, delta_time);
     
-    // Apply movement with collision detection
-    move_with_collision(data, data->player.vel_x * delta_time * 60.0, 
-                    data->player.vel_y * delta_time * 60.0);
-    
-    // Handle rotation
+    // Handle rotation (continuous while keys are held)
     /* Use connection-level flags for arrow keys to avoid indexing keysyms directly
        (XK_Left/XK_Right are large values and cause out-of-bounds accesses). */
     if (data->left_key_pressed)
     {
         double old_dir_x = data->player.dir_x;
-        double rot_speed = SPEED_ROTATE * delta_time * 60.0;
+        double rot_speed = data->player.rot_speed * delta_time * 60.0;
         data->player.dir_x = data->player.dir_x * cos(-rot_speed) - data->player.dir_y * sin(-rot_speed);
         data->player.dir_y = old_dir_x * sin(-rot_speed) + data->player.dir_y * cos(-rot_speed);
         double old_plane_x = data->player.plane_x;
@@ -148,7 +128,7 @@ void update_player_movement(t_connection *data, double delta_time)
     if (data->right_key_pressed)
     {
         double old_dir_x = data->player.dir_x;
-        double rot_speed = SPEED_ROTATE * delta_time * 60.0;
+        double rot_speed = data->player.rot_speed * delta_time * 60.0;
         data->player.dir_x = data->player.dir_x * cos(rot_speed) - data->player.dir_y * sin(rot_speed);
         data->player.dir_y = old_dir_x * sin(rot_speed) + data->player.dir_y * cos(rot_speed);
         double old_plane_x = data->player.plane_x;
