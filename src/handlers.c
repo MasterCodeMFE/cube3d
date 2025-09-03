@@ -129,6 +129,10 @@ int	update_game_loop(t_connection *data)
 	paint_view(data);
 	mlx_put_image_to_window(data->mlx_ptr, data->win_ptr, data->img.img_ptr, 0, 0);
 
+	// Update and draw FPS counter
+	update_fps_counter(data);
+	draw_fps_counter(data);
+
 	// Update timing
 	data->old_time = data->time;
 	data->time = current_time;

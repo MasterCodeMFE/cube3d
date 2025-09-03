@@ -52,6 +52,9 @@ void init_xserv_windw(t_connection *con) {
     
     // Initialize enhanced movement system
     init_player_movement(con);
+    
+    // Initialize FPS tracking
+    init_fps_tracking(con);
 
     // Iniciar hilo de música antes de entrar en el bucle de eventos
     pthread_create(&music_thread, NULL, play_music, NULL);

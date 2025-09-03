@@ -37,7 +37,8 @@ SRC =	main.c \
 		textures.c \
 		move.c \
 		rotate_aux.c \
-		musica.c
+		musica.c \
+		fps_counter.c
 		
 SRCS = $(addprefix $(SRCDIR)/, $(SRC))
 OBJS = $(addprefix $(OBJDIR)/, $(SRC:.c=.o))
