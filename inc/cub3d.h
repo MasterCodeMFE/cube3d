@@ -171,6 +171,17 @@ typedef struct s_connection
 	int			right_key_pressed;
 	long		time;
 	long		old_time;
+	// FPS tracking variables
+	int			frame_count;
+	long		fps_last_time;
+	int			current_fps;
+	// Minimap optimization variables
+	double		last_minimap_pos_x;
+	double		last_minimap_pos_y;
+	int			minimap_update_counter;
+	// Cached values for performance
+	int			cached_ceiling_color;
+	int			cached_floor_color;
 	t_map_file	map_file;
 	t_image		img;
 	t_player	player;
@@ -302,5 +313,10 @@ int			blend_colors(int base_color, int overlay_color, double alpha);
 
 long get_time_ms(void);
 
+// FPS tracking and display functions
+void		init_fps_tracking(t_connection *data);
+void		update_fps_counter(t_connection *data);
+void		draw_fps_counter(t_connection *data);
+void		draw_minimap_optimized(t_connection *data);
 
 #endif
