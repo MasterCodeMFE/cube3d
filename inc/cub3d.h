@@ -52,6 +52,9 @@
 # define MAX_VELOCITY 0.12
 # define MOUSE_SENSITIVITY 0.002
 
+// Key index validation macro
+# define KEY_INDEX_VALID(key) ((key) >= 0 && (key) < 256)
+
 //musica
 #define SAMPLE_RATE 44100
 #define AMPLITUDE 0.6  // Reducido para evitar distorsión

@@ -1,0 +1,25 @@
+# Compiled binary
+cub3d
+
+# Object files
+obj/
+*.o
+
+# Libraries
+libft/libft.a
+minilibx-linux/libmlx.a
+minilibx-linux/libmlx_Linux.a
+minilibx-linux/obj/
+minilibx-linux/makefile.gen
+minilibx-linux/test/makefile.gen
+minilibx-linux/test/mlx-test
+
+# Temporary files
+*~
+*.core
+core
+*SYMDEF*
+*S_Stor*
+
+# Test files
+/tmp/

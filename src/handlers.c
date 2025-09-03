@@ -84,7 +84,7 @@ int	handle_key_press(int keysym, t_connection *data)
 	else if (keysym == XK_Right)
 		data->right_key_pressed = 1;
 	// Keep using keys_pressed[] for ASCII-like keys (WASD)
-	else if (keysym >= 0 && keysym < 256)
+	else if (KEY_INDEX_VALID(keysym))
 		data->player.keys_pressed[keysym] = 1;
 	return (0);
 }
@@ -96,7 +96,7 @@ int	handle_key_release(int keysym, t_connection *data)
 		data->left_key_pressed = 0;
 	else if (keysym == XK_Right)
 		data->right_key_pressed = 0;
-	else if (keysym >= 0 && keysym < 256)
+	else if (KEY_INDEX_VALID(keysym))
 		data->player.keys_pressed[keysym] = 0;
 	return (0);
 }
