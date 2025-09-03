@@ -39,17 +39,17 @@
 # define EAST_COLOR 0x0000FF
 # define WEST_COLOR 0xFFFF00
 
-# define SPEED_ROTATE 0.05
+# define SPEED_ROTATE 0.06
 # define SPEED_WALK   0.08
 # define SPEED_STRAFE 0.08
 # define MAX_VIEW_ANGLE 30.0
 # define COLLISION_RADIUS 0.2
 # define PX_TEXTURE 300
 
-// Enhanced movement constants
-# define ACCELERATION 0.15
-# define FRICTION 0.85
-# define MAX_VELOCITY 0.12
+// Enhanced movement constants for DOOM-style feel
+# define ACCELERATION 0.20
+# define FRICTION 0.80
+# define MAX_VELOCITY 0.15
 # define MOUSE_SENSITIVITY 0.002
 
 // Key index validation macro

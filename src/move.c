@@ -132,7 +132,15 @@ void apply_movement_input(t_connection *data, double delta_time)
         target_vel_y += data->player.dir_x * max_vel;
     }
     
-    // Apply acceleration/deceleration
+    // Normalize diagonal movement (DOOM-style)
+    double target_magnitude = sqrt(target_vel_x * target_vel_x + target_vel_y * target_vel_y);
+    if (target_magnitude > max_vel)
+    {
+        target_vel_x = (target_vel_x / target_magnitude) * max_vel;
+        target_vel_y = (target_vel_y / target_magnitude) * max_vel;
+    }
+    
+    // Apply acceleration/deceleration with enhanced responsiveness
     double accel_factor = data->player.accel * delta_time;
     data->player.vel_x += (target_vel_x - data->player.vel_x) * accel_factor;
     data->player.vel_y += (target_vel_y - data->player.vel_y) * accel_factor;
@@ -144,7 +152,7 @@ void apply_movement_input(t_connection *data, double delta_time)
         data->player.vel_y *= data->player.friction;
     }
     
-    // Clamp velocity to max
+    // Final velocity clamp (safety check)
     double vel_magnitude = sqrt(data->player.vel_x * data->player.vel_x + 
                         data->player.vel_y * data->player.vel_y);
     if (vel_magnitude > max_vel)
