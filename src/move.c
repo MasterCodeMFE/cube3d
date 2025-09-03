@@ -17,22 +17,37 @@ void init_player_movement(t_connection *data)
 {
     int i;
     
+    // Initialize velocity and physics parameters
     data->player.vel_x = 0.0;
     data->player.vel_y = 0.0;
     data->player.accel = ACCELERATION;
     data->player.friction = FRICTION;
+    
+    // Initialize movement speeds
+    data->player.move_speed = SPEED_WALK;
+    data->player.rot_speed = SPEED_ROTATE;
+    
+    // Initialize view angle
+    data->player.view_angle = 0.0;
+    
+    // Clear all key states
     i = 0;
     while (i < 256)
     {
         data->player.keys_pressed[i] = 0;
         i++;
     }
+    
+    // Initialize connection-level key flags for arrow keys
+    data->left_key_pressed = 0;
+    data->right_key_pressed = 0;
 }
 
 int check_collision(t_connection *data, double new_x, double new_y)
 {
     // Check multiple points around the player for better collision detection
     double margin = COLLISION_RADIUS;
+    int min_x, max_x, min_y, max_y;
     
     // Check bounds first
     if (new_x - margin < 0 || new_y - margin < 0 || 
@@ -40,11 +55,23 @@ int check_collision(t_connection *data, double new_x, double new_y)
         new_y + margin >= data->map_file.map_num_rows)
         return (1);
     
+    // Calculate grid indices with proper bounds validation
+    min_x = (int)(new_x - margin);
+    max_x = (int)(new_x + margin);
+    min_y = (int)(new_y - margin);
+    max_y = (int)(new_y + margin);
+    
+    // Additional safety checks for array bounds (cast to avoid sign comparison warnings)
+    if (min_x < 0 || min_y < 0 || 
+        (unsigned int)max_x >= data->map_file.map_num_cols || 
+        (unsigned int)max_y >= data->map_file.map_num_rows)
+        return (1);
+    
     // Check four corners around the player position with margin
-    if (data->map_file.map_grid[(int)(new_y - margin)][(int)(new_x - margin)] == '1' ||
-        data->map_file.map_grid[(int)(new_y - margin)][(int)(new_x + margin)] == '1' ||
-        data->map_file.map_grid[(int)(new_y + margin)][(int)(new_x - margin)] == '1' ||
-        data->map_file.map_grid[(int)(new_y + margin)][(int)(new_x + margin)] == '1')
+    if (data->map_file.map_grid[min_y][min_x] == '1' ||
+        data->map_file.map_grid[min_y][max_x] == '1' ||
+        data->map_file.map_grid[max_y][min_x] == '1' ||
+        data->map_file.map_grid[max_y][max_x] == '1')
         return (1);
     
     return (0);
@@ -79,23 +106,27 @@ void apply_movement_input(t_connection *data, double delta_time)
     double target_vel_y = 0.0;
     double max_vel = MAX_VELOCITY;
     
-    // Calculate target velocity based on input
-    if (data->player.keys_pressed[XK_w] || data->player.keys_pressed[XK_W])
+    // Calculate target velocity based on input (using safe key index checks)
+    if ((KEY_INDEX_VALID(XK_w) && data->player.keys_pressed[XK_w]) || 
+        (KEY_INDEX_VALID(XK_W) && data->player.keys_pressed[XK_W]))
     {
         target_vel_x += data->player.dir_x * max_vel;
         target_vel_y += data->player.dir_y * max_vel;
     }
-    if (data->player.keys_pressed[XK_s] || data->player.keys_pressed[XK_S])
+    if ((KEY_INDEX_VALID(XK_s) && data->player.keys_pressed[XK_s]) || 
+        (KEY_INDEX_VALID(XK_S) && data->player.keys_pressed[XK_S]))
     {
         target_vel_x -= data->player.dir_x * max_vel;
         target_vel_y -= data->player.dir_y * max_vel;
     }
-    if (data->player.keys_pressed[XK_a] || data->player.keys_pressed[XK_A])
+    if ((KEY_INDEX_VALID(XK_a) && data->player.keys_pressed[XK_a]) || 
+        (KEY_INDEX_VALID(XK_A) && data->player.keys_pressed[XK_A]))
     {
         target_vel_x += data->player.dir_y * max_vel;
         target_vel_y -= data->player.dir_x * max_vel;
     }
-    if (data->player.keys_pressed[XK_d] || data->player.keys_pressed[XK_D])
+    if ((KEY_INDEX_VALID(XK_d) && data->player.keys_pressed[XK_d]) || 
+        (KEY_INDEX_VALID(XK_D) && data->player.keys_pressed[XK_D]))
     {
         target_vel_x -= data->player.dir_y * max_vel;
         target_vel_y += data->player.dir_x * max_vel;
