@@ -106,7 +106,9 @@ void apply_movement_input(t_connection *data, double delta_time)
     double target_vel_y = 0.0;
     double max_vel = MAX_VELOCITY;
     
-    // Calculate target velocity based on input (using safe key index checks)
+    // Calculate target velocity based on input (DOOM-style movement)
+    // Forward/Back: Use direction vector (dir_x, dir_y)
+    // Strafe: Use perpendicular vector (dir_y, -dir_x) for true lateral movement
     if ((KEY_INDEX_VALID(XK_w) && data->player.keys_pressed[XK_w]) || 
         (KEY_INDEX_VALID(XK_W) && data->player.keys_pressed[XK_W]))
     {
@@ -122,13 +124,13 @@ void apply_movement_input(t_connection *data, double delta_time)
     if ((KEY_INDEX_VALID(XK_a) && data->player.keys_pressed[XK_a]) || 
         (KEY_INDEX_VALID(XK_A) && data->player.keys_pressed[XK_A]))
     {
-        target_vel_x += data->player.dir_y * max_vel;
+        target_vel_x += data->player.dir_y * max_vel;  // Left strafe
         target_vel_y -= data->player.dir_x * max_vel;
     }
     if ((KEY_INDEX_VALID(XK_d) && data->player.keys_pressed[XK_d]) || 
         (KEY_INDEX_VALID(XK_D) && data->player.keys_pressed[XK_D]))
     {
-        target_vel_x -= data->player.dir_y * max_vel;
+        target_vel_x -= data->player.dir_y * max_vel;  // Right strafe
         target_vel_y += data->player.dir_x * max_vel;
     }
     

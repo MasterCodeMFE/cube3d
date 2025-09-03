@@ -42,10 +42,10 @@ void draw_weapon(t_connection *con)
     double bob_intensity = player_speed / MAX_VELOCITY; // 0.0 to 1.0
     if (bob_intensity > 1.0) bob_intensity = 1.0;
     
-    // Vertical bobbing with movement-based frequency and amplitude
+    // Enhanced vertical bobbing with movement-based frequency and amplitude
     int bob_offset_y = (int)(sin(time * 2 * M_PI * (2.0 + bob_intensity)) * (3 + bob_intensity * 7));
-    // Horizontal bobbing (subtle sway)
-    int bob_offset_x = (int)(cos(time * 2 * M_PI * 1.3) * (1 + bob_intensity * 2));
+    // Enhanced horizontal bobbing (subtle sway) - more pronounced when moving
+    int bob_offset_x = (int)(cos(time * 2 * M_PI * 1.3) * (1 + bob_intensity * 3));
 
     // Ajustar la posición vertical del arma para dibujarla más abajo
     int weapon_x = (con->wdw_wdth - con->weapon.width) / 2 + bob_offset_x;
