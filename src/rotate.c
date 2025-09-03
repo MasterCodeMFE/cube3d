@@ -61,10 +61,7 @@ void	rotate_left(t_connection *data)
 
 void	update_screen(t_connection *data)
 {
-	clear_screen(data);
-	paint_view(data);
-	mlx_put_image_to_window(data->mlx_ptr, data->win_ptr,
-		data->img.img_ptr, 0, 0);
+	// Only update timing - rendering is handled by main game loop
 	data->time = get_current_time_in_milliseconds();
 }
 

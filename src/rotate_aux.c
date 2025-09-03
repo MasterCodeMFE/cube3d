@@ -328,31 +328,59 @@ int	rgb_to_int(int *rgb)
 
 void	clear_screen(t_connection *con)
 {
-	int	x;
-	int	y;
-	int	color_top;
-	int	color_bottom;
-	int	color;
-
-	color_top = rgb_to_int(con->map_file.ceiling_rgb);
-	color_bottom = rgb_to_int(con->map_file.floor_rgb);
+	int		y;
+	int		*pixel_ptr;
+	int		pixels_per_line;
+	int		ceiling_height;
+	
+	pixels_per_line = con->img.line_len / (con->img.bpp / 8);
+	ceiling_height = con->wdw_hgth / 2;
+	pixel_ptr = (int *)con->img.img_px_ptr;
+	
+	// Fast fill ceiling (top half)
 	y = 0;
-	while (y < con->wdw_hgth)
+	while (y < ceiling_height)
 	{
-		if (y < con->wdw_hgth / 2)
-			color = color_top;
-		else
-			color = color_bottom;
-		x = 0;
+		int x = 0;
+		// Unroll loop slightly for better performance
+		while (x < con->wdw_wdth - 3)
+		{
+			pixel_ptr[y * pixels_per_line + x] = con->cached_ceiling_color;
+			pixel_ptr[y * pixels_per_line + x + 1] = con->cached_ceiling_color;
+			pixel_ptr[y * pixels_per_line + x + 2] = con->cached_ceiling_color;
+			pixel_ptr[y * pixels_per_line + x + 3] = con->cached_ceiling_color;
+			x += 4;
+		}
+		// Handle remaining pixels
 		while (x < con->wdw_wdth)
 		{
-			*(int *)(con->img.img_px_ptr + (y * con->img.line_len
-						+ x * (con->img.bpp / 8))) = color;
+			pixel_ptr[y * pixels_per_line + x] = con->cached_ceiling_color;
 			x++;
 		}
 		y++;
 	}
-	mlx_put_image_to_window(con->mlx_ptr, con->win_ptr, con->img.img_ptr, 0, 0);
+	
+	// Fast fill floor (bottom half)
+	while (y < con->wdw_hgth)
+	{
+		int x = 0;
+		// Unroll loop slightly for better performance
+		while (x < con->wdw_wdth - 3)
+		{
+			pixel_ptr[y * pixels_per_line + x] = con->cached_floor_color;
+			pixel_ptr[y * pixels_per_line + x + 1] = con->cached_floor_color;
+			pixel_ptr[y * pixels_per_line + x + 2] = con->cached_floor_color;
+			pixel_ptr[y * pixels_per_line + x + 3] = con->cached_floor_color;
+			x += 4;
+		}
+		// Handle remaining pixels
+		while (x < con->wdw_wdth)
+		{
+			pixel_ptr[y * pixels_per_line + x] = con->cached_floor_color;
+			x++;
+		}
+		y++;
+	}
 }
 
 void	paint_view(t_connection *con)
@@ -373,5 +401,5 @@ void	paint_view(t_connection *con)
 		draw_vertical_line(con, &ray);
 		ray.x++;
 	}
-	draw_minimap(con);
+	draw_minimap_optimized(con);
 }
